@@ -54,7 +54,9 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Return the pointer.
 
 RouteModel::Node *RoutePlanner::NextNode() {
-	sort(open_list.begin(),open_list.end(),[](const RouteModel::Node* ol1, const RouteModel::Node* ol2) {return ol1->g_value+ol1->h_value > ol2->g_value+ol2->h_value;});
+	sort(open_list.begin(),open_list.end(),[](const RouteModel::Node* ol1, const RouteModel::Node* ol2) {return ol1->g_value+ol1->h_value >= ol2->g_value+ol2->h_value;});
+  
+ // Referred to stack overflow to understand how to sort vactor of class type
   	RouteModel::Node* temp = open_list.back();
   	open_list.pop_back();
   	return temp;  	
@@ -100,9 +102,12 @@ void RoutePlanner::AStarSearch() {
 
     // TODO: Implement your solution here.
 	current_node = start_node;
+    start_node->visited = true;
+    start_node->g_value = 0.0;
+    start_node->parent = nullptr;
   	while(current_node->x != end_node->x && current_node->y != end_node->y){
     	AddNeighbors(current_node);
       	current_node = NextNode();
     }
-  	m_Model.path = ConstructFinalPath(current_node);
+  	m_Model.path = ConstructFinalPath(end_node);
 }
